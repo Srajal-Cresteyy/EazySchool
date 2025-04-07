@@ -21,15 +21,22 @@ public class ProjectSecurityConfig {
     SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.csrf(csrf -> csrf
                         .ignoringRequestMatchers("/saveMsg")
-                        .ignoringRequestMatchers("/public/**"))
+                        .ignoringRequestMatchers("/public/**")
+                        .ignoringRequestMatchers("/api/**")
+                        .ignoringRequestMatchers("/data-api/**")
+                        .ignoringRequestMatchers("/eazyschool/actuator/**"))
                 .authorizeHttpRequests(requests -> requests
                         .requestMatchers("/dashboard").authenticated()
                         .requestMatchers("/displayMessages/**").hasRole("ADMIN")
                         .requestMatchers("/closeMsg/**").hasRole("ADMIN")
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/","/home").permitAll()
+                        .requestMatchers("/eazyschool/actuator/**").hasRole("ADMIN")
+
+                        .requestMatchers("/api/**").authenticated()
+                        .requestMatchers("/data-api/**").authenticated()
                         .requestMatchers("/displayProfile").authenticated()
                         .requestMatchers("/updateProfile").authenticated()
+                        .requestMatchers("/","/home").permitAll()
                         .requestMatchers("/contact").permitAll()
                         .requestMatchers("/about").permitAll()
                         .requestMatchers("/courses").permitAll()

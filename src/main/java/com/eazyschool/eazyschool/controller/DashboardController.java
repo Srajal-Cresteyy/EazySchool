@@ -6,6 +6,7 @@ import com.eazyschool.eazyschool.repository.PersonRepository;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,6 +18,12 @@ public class DashboardController {
 
     @Autowired
     private PersonRepository personRepository;
+
+    @Value("${eazyschool.pageSize}")
+    private int defaultPageSize;
+
+    @Value("${eazyschool.contact.successMsg}")
+    private String message;
 
     @RequestMapping("/dashboard")
     public String displayDashboard(Model model , Authentication authentication , HttpSession session) {

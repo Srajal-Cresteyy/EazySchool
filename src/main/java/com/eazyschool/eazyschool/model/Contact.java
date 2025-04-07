@@ -17,6 +17,12 @@ This makes our code short and clean.
 @Data
 @Entity
 @Table(name = "contact_msg")
+@NamedQueries({
+                @NamedQuery(name = "Contact.findOpenMsgs",
+                        query = "SELECT c FROM Contact c WHERE c.status = 'Open'"),
+                @NamedQuery(name = "Contact.updateMsgStatus",
+                        query = "UPDATE Contact c SET c.status = :status WHERE c.contactId = :contactId")
+})
 public class Contact extends BaseEntity{
 
     @Id

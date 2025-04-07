@@ -1,5 +1,6 @@
 package com.eazyschool.eazyschool.service;
 
+import com.eazyschool.eazyschool.config.EazySchoolProps;
 import com.eazyschool.eazyschool.constants.EazySchoolConstants;
 import com.eazyschool.eazyschool.model.Contact;
 import com.eazyschool.eazyschool.repository.ContactRepository;
@@ -29,6 +30,9 @@ public class ContactService {
         this.contactRepository = contactRepository;
     }
 
+    @Autowired
+    EazySchoolProps eazySchoolProps;
+
     public boolean saveMessageDetails(Contact contact){
         contact.setStatus(EazySchoolConstants.OPEN);
         Contact contactSaved = contactRepository.save(contact);
@@ -37,18 +41,19 @@ public class ContactService {
 
     public boolean updateMsgStatus(int contactId){
         boolean isUpdated = false;
-        Optional<Contact> contact = contactRepository.findById(contactId);
-        contact.ifPresent(contact1 -> contact1.setStatus(EazySchoolConstants.CLOSE));
-        Contact contactUpdated = contactRepository.save(contact.get());
-        if(null != contactUpdated && contactUpdated.getUpdatedBy() != null) isUpdated = true;
+        int row = contactRepository.updateMsgStatus(EazySchoolConstants.CLOSE,contactId);
+        if(row > 0) isUpdated = true;
         return isUpdated ;
     }
 
     public Page<Contact> findMsgsWithOpenStatus(int pageNum, String sortField ,String sortDir){
-        int pageSize = 5;
+        int pageSize = eazySchoolProps.getPageSize();
+        if(null!=eazySchoolProps.getContact() && null!=eazySchoolProps.getContact().get("pageSize")){
+            pageSize = Integer.parseInt(eazySchoolProps.getContact().get("pageSize").trim());
+        }
         Pageable pageable = PageRequest.of(pageNum - 1 , pageSize ,
                 sortDir.equals("asc")? Sort.by(sortField).ascending():Sort.by(sortField).descending());
-        Page<Contact> contactPage = contactRepository.findByStatus(EazySchoolConstants.OPEN,pageable);
+        Page<Contact> contactPage = contactRepository.findByStatusByQueries(EazySchoolConstants.OPEN,pageable);
         return contactPage;
     }
 }
